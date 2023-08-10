@@ -3,14 +3,16 @@ import ERC20abi from '../erc-20-abi.json'
 import { ConnectionContext } from '../contexts/Connection'
 import { ethers } from 'ethers'
 import Web3 from 'web3'
-import {useApprovalStore} from '../contexts/ZustandStore'
-
+require('dotenv').config() 
+ 
 
 const Card = ({contractAddress,setCurrentContract,setModalOpen,modalOpen,setCurrentSymbol,
 refreshContract,setAllowanceList,fetchAllowances}) => {
     
+   
+    // console.log(ALCHEMY_KEY)
     const {provider,setErrorMessage,userAddress} = useContext(ConnectionContext)
-    let web3 = new Web3('https://polygon-mumbai.g.alchemy.com/v2/fxPKPIxJbZYT8vrW2NC7IyTBSs1VIhb-')
+    let web3 = new Web3(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY}`)
     
     const contractAbi = ERC20abi
     const [name,setName] = useState(null)
