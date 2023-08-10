@@ -4,7 +4,7 @@ import Test from './Test';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App mt-0 w-screen h-screen bg-slate-100 ">
       <Test/>
     </div>
   );

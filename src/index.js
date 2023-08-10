@@ -4,12 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ConnectionProvider } from './contexts/Connection';
+import { NetworkProvider } from './contexts/Network';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ConnectionProvider>
-      <App />
+      <NetworkProvider>
+        <App/>
+      </NetworkProvider>
     </ConnectionProvider>
   </React.StrictMode>
 );
