@@ -5,7 +5,7 @@ import {FaEthereum} from 'react-icons/fa'
 
 const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork,userBalance,setCurrentContract,
     setModalOpen,modalOpen,setCurrentSymbol,refreshContract, setRefreshContract, setAllowanceList,
-  parseAddress,parseBalance,allowancesGiven,getAllowances}) => { 
+  parseAddress,parseBalance,allowancesGiven,getAllowances, endpoint}) => { 
 
     const handleSubmit = (e)=>{
         e.preventDefault()
@@ -61,7 +61,7 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork
               setModalOpen={setModalOpen} modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol}
               refreshContract={refreshContract} setRefreshContract={setRefreshContract} 
               setAllowanceList={setAllowanceList} allowancesGiven={allowancesGiven}
-              getAllowances={getAllowances}/>
+              getAllowances={getAllowances} endpoint={endpoint}/>
             })}
           </div>
         </div>}

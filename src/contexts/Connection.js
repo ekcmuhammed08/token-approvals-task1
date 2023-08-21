@@ -8,6 +8,7 @@ export const ConnectionProvider = ({ children })=>{
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
     const [userBalance, setUserBalance] = useState(null)
+    const [endpoint, setEndpoint] = useState(null)
 
     const walletConnectHandler= ()=>{
         try {
@@ -25,7 +26,6 @@ export const ConnectionProvider = ({ children })=>{
           console.log(error)
         }
     }
-
     
     const accountChangeHandler =async()=> {
         const signer = await provider.getSigner()
@@ -39,9 +39,16 @@ export const ConnectionProvider = ({ children })=>{
     } 
     window.ethereum.on('accountsChanged', accountChangeHandler);
 
+
+
     useEffect(() => {
       walletConnectHandler()
     }, [])
+
+    // useEffect(() => {
+    //   endpointHandler()
+    // }, [currentNetwork])
+    
     
     return (<ConnectionContext.Provider
     value = {{provider,errorMessage,userAddress,userBalance,

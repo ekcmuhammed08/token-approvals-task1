@@ -1,18 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react'
 import ERC20abi from '../erc-20-abi.json' 
 import { ConnectionContext } from '../contexts/Connection'
+import { NetworkContext } from '../contexts/Network' 
 import { ethers } from 'ethers'
 import Web3 from 'web3'
 require('dotenv').config() 
  
 
 const Card = ({contractAddress,setCurrentContract,setModalOpen,modalOpen,setCurrentSymbol,
-refreshContract,setAllowanceList,getAllowances}) => {
-    
-   
+refreshContract,setAllowanceList,getAllowances,endpoint}) => {
     const {provider,setErrorMessage,userAddress} = useContext(ConnectionContext)
-    let web3 = new Web3(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY}`)
-    
+    let web3 = endpoint && new Web3(endpoint)
     const contractAbi = ERC20abi
     const [name,setName] = useState(null)
     const [symbol,setSymbol] = useState(null)

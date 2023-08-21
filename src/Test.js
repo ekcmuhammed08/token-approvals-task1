@@ -7,6 +7,7 @@ import { ethers } from 'ethers'
 import Modal from './components/Modal'
 import Head from './components/Head'
 import Web3 from 'web3'
+require('dotenv').config() 
 
 const Test = () => {
   const selectRef = useRef()
@@ -23,6 +24,7 @@ const Test = () => {
   const [refreshContract,setRefreshContract] = useState(false)
   const [allowanceList,setAllowanceList] = useState(null)
   const [allowancesGiven,setAllowancesGiven] = useState(false)
+  const [endpoint,setEndpoint] = useState(null)
 
   const {userBalance,userAddress,provider} = useContext(ConnectionContext)
   const {switchNetwork, currentNetwork, currentChainId} = useContext(NetworkContext)
@@ -43,6 +45,26 @@ const Test = () => {
       switchNetwork(JSON.parse(localStorage.getItem(`currentNetwork`))) 
     }
   }, [])
+
+  const endpointHandler = ()=>{
+    let current = JSON.parse(localStorage.getItem(`currentNetwork`))
+    if(current && current === 'Ethereum'){
+      console.log('Eth')
+      setEndpoint(`https://eth-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_ETHEREUM}`)
+    }else if(current && current === 'Mumbai'){
+      console.log('Mumbai')
+      setEndpoint(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_MUMBAI}`)
+    }else if(current && current === 'Polygon'){
+      console.log('Polygon')
+      setEndpoint(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_POLYGON}`)
+    }else if(current && current === 'Celo'){
+      console.log('Celo')
+      setEndpoint(`https://celo-mainnet-rpc.allthatnode.com`)
+    }else if(current && current === 'Celo Alfajores'){
+      console.log('Alfajores')
+      setEndpoint(`https://alfajores-forno.celo-testnet.org`)
+    }
+  }
 
   const sendTokens= async() =>{
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
@@ -86,9 +108,13 @@ const Test = () => {
       return bal
   } 
 
+  useEffect(() => {
+    endpointHandler()
+  }, [currentNetwork])
+
   return (
     <div className=""> 
-    
+      {/* {endpoint && endpoint} */}
       <Head 
       setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} 
       modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} 
@@ -96,7 +122,7 @@ const Test = () => {
       handleSelectNetwork={handleSelectNetwork} getAllowances={getAllowances}
       currentNetwork={currentNetwork}userBalance={userBalance}userAddress={userAddress}
       setAllowanceList={setAllowanceList} parseAddress={parseAddress} parseBalance={parseBalance}
-      allowancesGiven={allowancesGiven}
+      allowancesGiven={allowancesGiven} endpoint={endpoint}
       />
       {JSON.stringify(currentChainId)} 
       <Modal modalOpen={modalOpen}
