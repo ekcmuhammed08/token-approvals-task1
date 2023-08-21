@@ -59,10 +59,10 @@ const Test = () => {
       setEndpoint(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_POLYGON}`)
     }else if(current && current === 'Celo'){
       console.log('Celo')
-      setEndpoint(`https://celo-mainnet-rpc.allthatnode.com`)
+      setEndpoint(`https://celo-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`)
     }else if(current && current === 'Celo Alfajores'){
       console.log('Alfajores')
-      setEndpoint(`https://alfajores-forno.celo-testnet.org`)
+      setEndpoint(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`)
     }
   }
 
@@ -114,7 +114,7 @@ const Test = () => {
 
   return (
     <div className=""> 
-      {/* {endpoint && endpoint} */}
+      {endpoint && endpoint}
       <Head 
       setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} 
       modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} 

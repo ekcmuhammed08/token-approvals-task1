@@ -52,6 +52,7 @@ refreshContract,setAllowanceList,getAllowances,endpoint}) => {
     }, [refreshContract])
 
     const listenApprovals = async(tokenAddress)=>{
+      // console.log(tokenAddress)
       var filter = {
         address: tokenAddress,
         fromBlock: 0 
@@ -59,6 +60,7 @@ refreshContract,setAllowanceList,getAllowances,endpoint}) => {
       var arr = []
       var newArr = []
       let events = await web3.eth.getPastLogs(filter)
+      console.log(tokenAddress)
       events &&console.log(events[12])
       events && events.filter((e)=>{
         if(e.topics[0]==='0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
