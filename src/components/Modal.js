@@ -3,8 +3,7 @@ import {FaUserCircle,FaCoins} from 'react-icons/fa'
 import {MdCancel} from 'react-icons/md'
 
 const Modal = ({modalOpen,recipientRef,sendAmountRef,allowanceRecipientRef,giveAllowanceRef,
-currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList,listenApprovals,fetchAllowances,
-parseAddress}) => {
+currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
 
     const [openAllowances,setOpenAllowances] = useState(false) 
     const handleSendTokens = ()=>{
@@ -49,9 +48,6 @@ parseAddress}) => {
                     <input type='number' className='border-4 w-20' placeholder='amount' ref={sendAmountRef} step='.000000000000000001'/>
                     <button className='bg-gray-300 border rounded w-full px-2 mx-2' onClick={handleSendTokens}>Send</button>
                 </div>
-                {/* <div className="">
-                    <button className='bg-gray-300 border rounded w-full px-2 mt-2' onClick={handleSendTokens}>Send</button>
-                </div> */}
             </div>
             <hr className='my-4'/>
             <div className="flex flex-col items-center">
@@ -61,9 +57,6 @@ parseAddress}) => {
                     <input type='number' className='border-4 w-20' placeholder='amount' ref={giveAllowanceRef} step='.000000000000000001'/>
                     <button className='bg-gray-300 border rounded w-full px-2 mx-2' onClick={handleGiveAllowance}>Give</button>
                 </div>
-                {/* <div className="">
-                    <button className='bg-gray-300 border rounded w-full px-2 mt-2' onClick={handleGiveAllowance}>Give Allowance</button>
-                </div> */}
             </div>
             <div className="mt-2">
                 {openAllowances?<button className='bg-[#f0f8ff] border p-1 rounded' onClick={handleOpenAllowances}>Show Allowances Given ^</button>

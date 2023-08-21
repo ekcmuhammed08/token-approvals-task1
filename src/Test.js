@@ -22,12 +22,11 @@ const Test = () => {
   const [currentSymbol,setCurrentSymbol] = useState()
   const [refreshContract,setRefreshContract] = useState(false)
   const [allowanceList,setAllowanceList] = useState(null)
-  const [fetchAllowances,setFetchAllowances] = useState(false)
+  const [allowancesGiven,setAllowancesGiven] = useState(false)
 
-  const {errorMessage,userBalance,userAddress,provider} = useContext(ConnectionContext)
-  const {switchNetwork, currentNetwork, setCurrentNetwork} = useContext(NetworkContext)
+  const {userBalance,userAddress,provider} = useContext(ConnectionContext)
+  const {switchNetwork, currentNetwork, currentChainId} = useContext(NetworkContext)
 
-  const web3 = new Web3('https://polygon-mumbai.g.alchemy.com/v2/fxPKPIxJbZYT8vrW2NC7IyTBSs1VIhb-')
   const handleSelectNetwork =()=>{ 
     switchNetwork(selectRef.current.value)
     localStorage.setItem(`currentNetwork`,JSON.stringify(selectRef.current.value))
@@ -39,11 +38,9 @@ const Test = () => {
 
   useEffect(() => {
     if(localStorage.getItem(`currentNetwork`)===null){
-      console.log('okauyy')
       switchNetwork('Ethereum')
     }else{
       switchNetwork(JSON.parse(localStorage.getItem(`currentNetwork`))) 
-      console.log('nope')
     }
   }, [])
 
@@ -65,7 +62,7 @@ const Test = () => {
     return true
   }
   
-  const getAllowance= async(contractAddress,spender) =>{
+  const getAllowances= async(contractAddress,spender) =>{
     const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
     const signer = await provider.getSigner()
     const contractWSigner =contract.connect(signer) 
@@ -87,46 +84,21 @@ const Test = () => {
   const parseBalance = (balance)=>{
       var bal = balance.slice(1,7) 
       return bal
-  }
-  // const listenApprovals = async()=>{
-  //   var filter = {
-  //     address: currentContract,
-  //     fromBlock: 0 
-  //   }
-  //   var arr = []
-  //   var newArr = []
-  //   let events = await web3.eth.getPastLogs(filter)
-  //   events &&console.log(events[12])
-  //   events && events.filter((e)=>{
-  //     if(e.topics[0]==='0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
-  //     &&e.topics[1] === '0x0000000000000000000000005c78b1e594644012980445094da95951c255fc0f'){
-  //       console.log(e.transactionHash + ' is an Approval Event')
-  //       if(!arr.includes(e.topics[2].slice(0,2) + e.topics[2].slice(26,e.topics[2].length))){
-  //         arr.push(e.topics[2].slice(0,2) + e.topics[2].slice(26,e.topics[2].length))
-  //       }
-  //     }
-  //   })
-  //   arr && console.log(arr)
-  //   arr && arr.map(async(e)=>{
-  //     var allowance = await getAllowance(currentContract,e)
-  //     allowance && console.log(e,ethers.utils.formatEther(allowance))
-  //     allowance && newArr.push({address:e,value:ethers.utils.formatEther(allowance)}) 
-  //   })
-  //   newArr && console.log(newArr)
-  //   newArr && setAllowanceList(newArr)    
-  // }  
+  } 
 
   return (
     <div className=""> 
+    
       <Head 
       setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} 
       modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} 
       setRefreshContract={setRefreshContract} inputRef={inputRef} selectRef={selectRef}  
-      handleSelectNetwork={handleSelectNetwork} errorMessage={errorMessage} 
+      handleSelectNetwork={handleSelectNetwork} getAllowances={getAllowances}
       currentNetwork={currentNetwork}userBalance={userBalance}userAddress={userAddress}
       setAllowanceList={setAllowanceList} parseAddress={parseAddress} parseBalance={parseBalance}
-      fetchAllowances={fetchAllowances}
+      allowancesGiven={allowancesGiven}
       />
+      {JSON.stringify(currentChainId)} 
       <Modal modalOpen={modalOpen}
       setModalOpen={setModalOpen} 
       currentSymbol={currentSymbol} 
@@ -137,9 +109,7 @@ const Test = () => {
       giveAllowanceRef={giveAllowanceRef}
       giveAllowance={giveAllowance}
       allowanceList={allowanceList}
-      setFetchAllowances={setFetchAllowances}
-      fetchAllowances={fetchAllowances}
-      parseAddress={parseAddress}
+      setAllowancesGiven={setAllowancesGiven}
       />
       
     </div>

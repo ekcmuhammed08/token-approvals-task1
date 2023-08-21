@@ -3,9 +3,9 @@ import Card from './Card'
 import {MdAccountBalanceWallet} from 'react-icons/md'
 import {FaEthereum} from 'react-icons/fa'
 
-const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,errorMessage,currentNetwork,userBalance,setCurrentContract,
+const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork,userBalance,setCurrentContract,
     setModalOpen,modalOpen,setCurrentSymbol,refreshContract, setRefreshContract, setAllowanceList,
-  parseAddress,parseBalance,fetchAllowances}) => { 
+  parseAddress,parseBalance,allowancesGiven,getAllowances}) => { 
 
     const handleSubmit = (e)=>{
         e.preventDefault()
@@ -28,14 +28,13 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,errorMessage,c
                 <FaEthereum size={'28px'} className='mt-1 mr-2'/>
                 {userBalance&&<p className='text-3xl font-medium pr-8'>{parseBalance(JSON.stringify(userBalance))}</p>}
             </div>
-            {/* <div className="pr-8">
-              <button className='border bg-gradient-to-r from-rose-500 to-rose-800 px-3 text-slate-50 font-medium rounded-lg'>Disconnect</button>
-            </div> */}
             <div className="">
                 <select id="select" ref={selectRef} onClick={handleSelectNetwork}>
                     <option value="Mumbai" id='Mumbai'>Mumbai</option>
                     <option value="Polygon" id='Polygon'>Polygon</option>
                     <option value="Ethereum" id='Ethereum'>Ethereum</option>
+                    <option value="Celo" id='Celo'>Celo</option>
+                    <option value="Celo Alfajores" id='Celo Alfajores'>Celo Alfajores</option>
                 </select>
             </div>
         </div>
@@ -61,7 +60,8 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,errorMessage,c
               return <Card contractAddress={c} setCurrentContract={setCurrentContract} 
               setModalOpen={setModalOpen} modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol}
               refreshContract={refreshContract} setRefreshContract={setRefreshContract} 
-              setAllowanceList={setAllowanceList} fetchAllowances={fetchAllowances}/>
+              setAllowanceList={setAllowanceList} allowancesGiven={allowancesGiven}
+              getAllowances={getAllowances}/>
             })}
           </div>
         </div>}

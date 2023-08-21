@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 export const NetworkContext = createContext()  
 
 export const NetworkProvider = ({ children })=>{
-    const [currentNetwork,setCurrentNetwork] = useState(null)
+    const [currentNetwork,setCurrentNetwork] = useState(null)    
     const switchNetwork = async(key) =>{
         switch (key) {
           case "Mumbai":
@@ -81,6 +81,62 @@ export const NetworkProvider = ({ children })=>{
                         chainId: '0x1',
                         chainName: 'Ethereum Mainnet',
                         rpcUrls: ['https://ethereum.publicnode.com'] /* ... */,
+                      },
+                    ],
+                  });
+                } catch (addError) {
+                  // handle "add" error
+                }
+              }
+              // handle other "switch" errors
+            }
+            break;
+          case "Celo":
+            try {
+              await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0xa4ec' }],
+              }).then(()=>{setCurrentNetwork('Celo')})
+                .then(()=>{localStorage.setItem(`currentNetwork`,JSON.stringify('Celo'))})
+            } catch (switchError) {
+              // This error code indicates that the chain has not been added to MetaMask.
+              if (switchError.code === 4902) {
+                try {
+                  await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                      {
+                        chainId: '0xa4ec',
+                        chainName: 'Celo Mainnet',
+                        rpcUrls: ['https://forno.celo.org'] /* ... */,
+                      },
+                    ],
+                  });
+                } catch (addError) {
+                  // handle "add" error
+                }
+              }
+              // handle other "switch" errors
+            }
+            break;
+          case "Celo Alfajores":
+            try {
+              await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0xaef3' }],
+              }).then(()=>{setCurrentNetwork('Celo Alfajores')})
+                .then(()=>{localStorage.setItem(`currentNetwork`,JSON.stringify('Celo Alfajores'))})
+            } catch (switchError) {
+              // This error code indicates that the chain has not been added to MetaMask.
+              if (switchError.code === 4902) {
+                try {
+                  await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                      {
+                        chainId: '0xaef3',
+                        chainName: 'Alfajores Testnet',
+                        rpcUrls: ["https://alfajores-forno.celo-testnet.org"] /* ... */,
                       },
                     ],
                   });

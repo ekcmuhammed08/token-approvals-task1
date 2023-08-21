@@ -7,20 +7,16 @@ require('dotenv').config()
  
 
 const Card = ({contractAddress,setCurrentContract,setModalOpen,modalOpen,setCurrentSymbol,
-refreshContract,setAllowanceList,fetchAllowances}) => {
+refreshContract,setAllowanceList,getAllowances}) => {
     
    
-    // console.log(ALCHEMY_KEY)
     const {provider,setErrorMessage,userAddress} = useContext(ConnectionContext)
     let web3 = new Web3(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY}`)
     
     const contractAbi = ERC20abi
     const [name,setName] = useState(null)
     const [symbol,setSymbol] = useState(null)
-    const [balance,setBalance] = useState(null)
-    // const allowanceList = useApprovalStore((state)=>state.allowanceList)
-    // const setAllowance = useApprovalStore((state)=>state.setAllowance) 
-    
+    const [balance,setBalance] = useState(null)   
 
     const loadContract = async()=>{
       try { 
@@ -57,14 +53,6 @@ refreshContract,setAllowanceList,fetchAllowances}) => {
       loadContract()
     }, [refreshContract])
 
-    const getAllowance= async(contractAddress,spender) =>{
-      const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
-      const signer = await provider.getSigner()
-      const contractWSigner =contract.connect(signer) 
-      const allowance = await contractWSigner.allowance(userAddress,spender);
-      return allowance
-     }
-
     const listenApprovals = async(tokenAddress)=>{
       var filter = {
         address: tokenAddress,
@@ -85,7 +73,7 @@ refreshContract,setAllowanceList,fetchAllowances}) => {
       })
       arr && console.log(arr)
       arr && arr.map(async(e)=>{
-        var allowance = await getAllowance(tokenAddress,e)
+        var allowance = await getAllowances(tokenAddress,e)
         allowance && console.log(e,ethers.utils.formatEther(allowance))
         allowance && allowance>0 && newArr.push({address:e,value:ethers.utils.formatEther(allowance)}) 
       })
