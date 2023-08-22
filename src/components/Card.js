@@ -8,9 +8,8 @@ require('dotenv').config()
  
 
 const Card = ({contractAddress,setCurrentContract,setModalOpen,modalOpen,setCurrentSymbol,
-refreshContract,setAllowanceList,getAllowances,endpoint}) => {
-    const {provider,setErrorMessage,userAddress} = useContext(ConnectionContext)
-    let web3 = endpoint && new Web3(endpoint)
+refreshContract,setAllowanceList,getAllowances}) => {
+    const {provider,setErrorMessage,userAddress,endpoint} = useContext(ConnectionContext)
     const contractAbi = ERC20abi
     const [name,setName] = useState(null)
     const [symbol,setSymbol] = useState(null)
@@ -21,7 +20,7 @@ refreshContract,setAllowanceList,getAllowances,endpoint}) => {
         if(userAddress){
           setErrorMessage('') 
             try {
-            const contract = new ethers.Contract(contractAddress,contractAbi,provider)  
+            const contract = new ethers.Contract(contractAddress,contractAbi,provider)
             const name = await contract.name()
             name && setName(name)
             const symbol = await contract.symbol()
@@ -52,16 +51,16 @@ refreshContract,setAllowanceList,getAllowances,endpoint}) => {
     }, [refreshContract])
 
     const listenApprovals = async(tokenAddress)=>{
-      // console.log(tokenAddress)
       var filter = {
         address: tokenAddress,
         fromBlock: 0 
       }
       var arr = []
       var newArr = []
-      let events = await web3.eth.getPastLogs(filter)
       console.log(tokenAddress)
-      events &&console.log(events[12])
+      let events =  await endpoint.eth.getPastLogs(filter)
+      events && console.log(events)
+      events && console.log(events[12])
       events && events.filter((e)=>{
         if(e.topics[0]==='0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
         &&e.topics[1] === '0x0000000000000000000000005c78b1e594644012980445094da95951c255fc0f'){
