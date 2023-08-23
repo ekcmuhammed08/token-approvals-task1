@@ -58,6 +58,7 @@ refreshContract,setAllowanceList,getAllowances}) => {
       var arr = []
       var newArr = []
       console.log(tokenAddress)
+      
       let events =  await endpoint.eth.getPastLogs(filter)
       events && console.log(events)
       events && console.log(events[12])
@@ -78,12 +79,45 @@ refreshContract,setAllowanceList,getAllowances}) => {
       })
       newArr && console.log(newArr)
       newArr && setAllowanceList(newArr)    
+    }
+
+    const listenApprovals2 = async(contractAddress)=>{
+      const provider = new ethers.providers.JsonRpcProvider(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`);
+      const contract = new ethers.Contract(contractAddress,contractAbi,provider);
+      console.log('ethers block number ', await provider.getBlockNumber());
+
+      const filter = contract.filters.Approval(userAddress);
+      console.log('filter = ', filter);
+
+      const logs = await contract.queryFilter(filter)
+      logs.sort((a, b) => a.blockNumber - b.blockNumber);
+      //const logs = await provider.getLogs(filter);
+      console.log('logs', logs);
+
+      const allowences = [];
+      logs.forEach((event) => {
+        const item = allowences.find((i) => i.address === event.args.spender);
+        if (item) {
+          if (event.args.value.isZero()) {
+            allowences.splice(allowences.indexOf(item), 1);
+          } else {
+            item.value = event.args.value;
+          }
+        } else if(event.args.value.isZero() === false) {
+          allowences.push({
+            address: event.args.spender,
+            value: event.args.value,
+          });
+        }
+      });
+      console.log({allowences});
+      setAllowanceList(allowences);
     }  
 
     const handleClick=async()=>{
       setCurrentContract(contractAddress)
       setCurrentSymbol(symbol)
-      await listenApprovals(contractAddress)
+      await listenApprovals2(contractAddress)
       setModalOpen(!modalOpen)
     }
     
