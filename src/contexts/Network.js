@@ -1,5 +1,4 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import { ethers } from "ethers";
+import { createContext, useState} from "react";
 
 export const NetworkContext = createContext()  
 

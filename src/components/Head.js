@@ -4,20 +4,21 @@ import {MdAccountBalanceWallet} from 'react-icons/md'
 import {FaEthereum} from 'react-icons/fa'
 
 const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork,userBalance,setCurrentContract,
-    setModalOpen,modalOpen,setCurrentSymbol,refreshContract, setRefreshContract, setAllowanceList,
-  parseAddress,parseBalance,allowancesGiven,getAllowances, endpoint}) => { 
+    setModalOpen,modalOpen,setCurrentSymbol,refreshContract, setAllowanceList,
+  parseAddress,parseBalance,allowancesGiven, endpoint, refreshInfo, setLoading}) => { 
 
     const handleSubmit = (e)=>{
         e.preventDefault()
-        if(localStorage.getItem(`${currentNetwork}Contracts`)===null){
-          localStorage.setItem(`${currentNetwork}Contracts`,JSON.stringify([inputRef.current.value]))
+        if(localStorage.getItem(`${currentNetwork} Contracts`)===null){
+          localStorage.setItem(`${currentNetwork} Contracts`,JSON.stringify([inputRef.current.value]))
         }
         else{
-          const arr = JSON.parse(localStorage.getItem(`${currentNetwork}Contracts`))
+          const arr = JSON.parse(localStorage.getItem(`${currentNetwork} Contracts`))
           !arr.includes(inputRef.current.value) && arr.push(inputRef.current.value)
-          localStorage.setItem(`${currentNetwork}Contracts`,JSON.stringify(arr))
+          localStorage.setItem(`${currentNetwork} Contracts`,JSON.stringify(arr))
         }
         inputRef.current.value = ''
+        refreshInfo(4000)
     }
   return (
     <div className=" mb-8">
@@ -55,13 +56,13 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork
               </form> 
           </div>}
           <div className="flex flex-wrap w-2/3 bg-[#f0f8ff] justify-center mt-12 border-dashed border-4 rounded">
-            {localStorage.getItem(`${currentNetwork}Contracts`) &&
-            JSON.parse(localStorage.getItem(`${currentNetwork}Contracts`)).map((c)=>{
+            {localStorage.getItem(`${currentNetwork} Contracts`) &&
+            JSON.parse(localStorage.getItem(`${currentNetwork} Contracts`)).map((c)=>{
               return <Card contractAddress={c} setCurrentContract={setCurrentContract} 
               setModalOpen={setModalOpen} modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol}
-              refreshContract={refreshContract} setRefreshContract={setRefreshContract} 
-              setAllowanceList={setAllowanceList} allowancesGiven={allowancesGiven}
-              getAllowances={getAllowances} endpoint={endpoint}/>
+              refreshContract={refreshContract} setAllowanceList={setAllowanceList} 
+              allowancesGiven={allowancesGiven} endpoint={endpoint} refreshInfo={refreshInfo} 
+              setLoading={setLoading}/>
             })}
           </div>
         </div>}

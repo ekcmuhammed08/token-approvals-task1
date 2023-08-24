@@ -1,22 +1,20 @@
 import React, { useContext, useRef, useEffect, useState } from 'react'
 import { ConnectionContext } from './contexts/Connection'
-import Card from './components/Card'
 import ERC20abi from './erc-20-abi.json' 
 import { NetworkContext } from './contexts/Network'
 import { ethers } from 'ethers'
 import Modal from './components/Modal'
 import Head from './components/Head'
-import Web3 from 'web3'
+import Loading from './components/Loading'
 require('dotenv').config() 
 
-const Test = () => {
+const MainContainer = () => {
   const selectRef = useRef()
   const inputRef = useRef()
   const recipientRef = useRef()
   const sendAmountRef = useRef()
   const allowanceRecipientRef = useRef()
   const giveAllowanceRef = useRef()
-  const contractAbi = ERC20abi
   
   const [modalOpen,setModalOpen]=useState(false)
   const [currentContract,setCurrentContract] = useState()
@@ -24,10 +22,10 @@ const Test = () => {
   const [refreshContract,setRefreshContract] = useState(false)
   const [allowanceList,setAllowanceList] = useState(null)
   const [allowancesGiven,setAllowancesGiven] = useState(false)
-  const [endpoint,setEndpoint] = useState(null)
+  const [loading,setLoading] = useState(true)
 
-  const {userBalance,userAddress,provider} = useContext(ConnectionContext)
-  const {switchNetwork, currentNetwork, currentChainId} = useContext(NetworkContext)
+  const {userBalance,userAddress,provider,endpoint,endpointHandler} = useContext(ConnectionContext)
+  const {switchNetwork, currentNetwork} = useContext(NetworkContext)
 
   const handleSelectNetwork =()=>{ 
     switchNetwork(selectRef.current.value)
@@ -46,54 +44,36 @@ const Test = () => {
     }
   }, [])
 
-  const endpointHandler = ()=>{
-    let current = JSON.parse(localStorage.getItem(`currentNetwork`))
-    if(current && current === 'Ethereum'){
-      console.log('Eth')
-      setEndpoint(`https://eth-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_ETHEREUM}`)
-    }else if(current && current === 'Mumbai'){
-      console.log('Mumbai')
-      setEndpoint(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_MUMBAI}`)
-    }else if(current && current === 'Polygon'){
-      console.log('Polygon')
-      setEndpoint(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_KEY_POLYGON}`)
-    }else if(current && current === 'Celo'){
-      console.log('Celo')
-      setEndpoint(`https://celo-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`)
-    }else if(current && current === 'Celo Alfajores'){
-      console.log('Alfajores')
-      setEndpoint(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`)
-    }
-  }
 
   const sendTokens= async() =>{
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
-    const signer = await provider.getSigner()
+    const signer = await provider.getSigner(userAddress)
     const contractWSigner =contract.connect(signer) 
     await contractWSigner.transfer(recipientRef.current.value,ethers.utils.parseEther(sendAmountRef.current.value))
     .then((res)=>{refreshInfo(10000)}).catch(error=>{console.log(error)})
     return true
   }
 
-  const giveAllowance= async(to,amount) =>{
+  const giveAllowance= async() =>{
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
-    const signer = await provider.getSigner()
+    const signer = await provider.getSigner(userAddress)
     const contractWSigner =contract.connect(signer) 
-    await contractWSigner.approve(to,ethers.utils.parseEther(amount))
+    await contractWSigner.approve(allowanceRecipientRef.current.value,ethers.utils.parseEther(giveAllowanceRef.current.value))
     .then((res)=>{refreshInfo(10000)}).catch(error=>{console.log(error)})
     return true
   }
   
-  const getAllowances= async(contractAddress,spender) =>{
-    const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
-    const signer = await provider.getSigner()
-    const contractWSigner =contract.connect(signer) 
-    const allowance = await contractWSigner.allowance(userAddress,spender);
-    return allowance
-  }
-
+  // const getAllowances= async(contractAddress,spender) =>{
+  //   const contract = new ethers.Contract(contractAddress,ERC20abi,provider) 
+  //   const signer = await provider.getSigner(userAddress)
+  //   const contractWSigner =contract.connect(signer) 
+  //   const allowance = await contractWSigner.allowance('0x5C78b1E594644012980445094da95951c255FC0F','0x698b8333FF583cdAAf0bDD5a588bB459ceD3024B');
+  //   return allowance
+  // }
   const refreshInfo =(duration) =>{
+    setLoading(true)
     setTimeout(()=>{
+      setLoading(false)
       setRefreshContract(!refreshContract)
       console.log('refreshed')
       setModalOpen(false)
@@ -107,24 +87,21 @@ const Test = () => {
       var bal = balance.slice(1,7) 
       return bal
   } 
-
+  
   useEffect(() => {
     endpointHandler()
+    
   }, [currentNetwork])
-
   return (
-    <div className=""> 
-      {endpoint && endpoint}
+    <div className="">
       <Head 
-      setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} 
-      modalOpen={modalOpen} setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} 
-      setRefreshContract={setRefreshContract} inputRef={inputRef} selectRef={selectRef}  
-      handleSelectNetwork={handleSelectNetwork} getAllowances={getAllowances}
-      currentNetwork={currentNetwork}userBalance={userBalance}userAddress={userAddress}
-      setAllowanceList={setAllowanceList} parseAddress={parseAddress} parseBalance={parseBalance}
-      allowancesGiven={allowancesGiven} endpoint={endpoint}
+      setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} modalOpen={modalOpen} 
+      setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} inputRef={inputRef}   
+      handleSelectNetwork={handleSelectNetwork} currentNetwork={currentNetwork} userBalance={userBalance} 
+      userAddress={userAddress} setAllowanceList={setAllowanceList} parseAddress={parseAddress} 
+      parseBalance={parseBalance} allowancesGiven={allowancesGiven} endpoint={endpoint} 
+      refreshInfo={refreshInfo} setLoading={setLoading} selectRef={selectRef}
       />
-      {JSON.stringify(currentChainId)} 
       <Modal modalOpen={modalOpen}
       setModalOpen={setModalOpen} 
       currentSymbol={currentSymbol} 
@@ -137,9 +114,9 @@ const Test = () => {
       allowanceList={allowanceList}
       setAllowancesGiven={setAllowancesGiven}
       />
-      
+      <Loading loading={loading}/>
     </div>
   )
 }
 
-export default Test
+export default MainContainer

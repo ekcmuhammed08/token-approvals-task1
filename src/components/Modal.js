@@ -9,24 +9,21 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
     const handleSendTokens = ()=>{
         sendTokens()
         .then(()=>{
-        recipientRef.current.value = ''
-        sendAmountRef.current.value = '' 
+            recipientRef.current.value = ''
+            sendAmountRef.current.value = '' 
         })
     }
     const handleGiveAllowance = ()=>{
-        giveAllowance(allowanceRecipientRef.current.value,giveAllowanceRef.current.value)
+        giveAllowance()
         .then(()=>{
-          recipientRef.current.value = ''
-          sendAmountRef.current.value = ''
-        })
+            allowanceRecipientRef.current.value = ''
+            giveAllowanceRef.current.value = ''
+        })  
     }
     const handleRemoveAllowance = (address)=>{
         console.log(address)
         giveAllowance(address,'0')
-        .then(()=>{
-          recipientRef.current.value = ''
-          sendAmountRef.current.value = ''
-        })
+
     }
     const handleOpenAllowances = ()=>{
         setOpenAllowances(!openAllowances)
@@ -37,6 +34,8 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
         setOpenAllowances(false)
       }
     }, [modalOpen])
+
+    console.log(allowanceList)
     
   return (
     <div className={`flex ${!modalOpen&&'hidden'}`} >
@@ -51,7 +50,7 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
             </div>
             <hr className='my-4'/>
             <div className="flex flex-col items-center">
-                <p className='font-bold'>Give Allowance For {currentSymbol} Tokens</p> 
+                <p className='font-bold'>Set Allowance For {currentSymbol} Tokens</p> 
                 <div className="flex flex-row">
                     <input type="text" className='border-4 mr-4' placeholder='recipient address' ref={allowanceRecipientRef}/>
                     <input type='number' className='border-4 w-20' placeholder='amount' ref={giveAllowanceRef} step='.000000000000000001'/>

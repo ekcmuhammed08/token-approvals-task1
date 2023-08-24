@@ -1,28 +1,23 @@
-import { createContext, useState, useEffect, useContext, useMemo } from "react";
+import { createContext, useState, useEffect,} from "react";
 import { ethers } from "ethers";
-import Web3 from 'web3'
 
 export const ConnectionContext = createContext()    
 
 export const ConnectionProvider = ({ children })=>{
-    const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum,"any")
-
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
     const [userBalance, setUserBalance] = useState(null)
     const [endpoint, setEndpoint] = useState(null)
+    const provider = new ethers.providers.Web3Provider(window.ethereum,'any')
 
-    let web3 = useMemo(()=>{
-      let obj = new Web3(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY_CELO}`)
-      console.log('instance')
-      return obj
-    },[])
     const walletConnectHandler= ()=>{
+      console.log('changed')
         try {
           if(window.ethereum){
-            provider.send("eth_requestAccounts",[]).then(async()=>{
-               await accountChangeHandler()
-               setErrorMessage('')
+            provider.send("eth_requestAccounts",[]).then(async(res)=>{  
+              console.log(res[0])
+              setUserAddress(res[0])
+              setErrorMessage('')
             })
         }
         else{
@@ -33,29 +28,45 @@ export const ConnectionProvider = ({ children })=>{
           console.log(error)
         }
     }
+    window.ethereum.on('accountsChanged', ()=>{walletConnectHandler()})
+    window.ethereum.on('networkChanged', ()=>{balanceHandler()})
+    const balanceHandler = async()=> {
+        const bal = userAddress && await provider.getBalance(userAddress)     
+        bal&&setUserBalance(ethers.utils.formatEther(bal))
+    }
+
+    const endpointHandler = ()=>{
+      let current = JSON.parse(localStorage.getItem(`currentNetwork`))
+      if(current && current === 'Ethereum'){
+        console.log('Eth')
+        setEndpoint(`https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
+      }else if(current && current === 'Mumbai'){
+        console.log('Mumbai')
+        setEndpoint(`https://polygon-mumbai.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
+      }else if(current && current === 'Polygon'){
+        console.log('Polygon')
+        setEndpoint(`https://polygon-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
+      }else if(current && current === 'Celo'){
+        console.log('Celo')
+        setEndpoint(`https://celo-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
+      }else if(current && current === 'Celo Alfajores'){
+        console.log('Alfajores')
+        setEndpoint(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
+      }
+    }
     
-    const accountChangeHandler =async()=> {
-        const signer = await provider.getSigner()
-        console.log(signer)
-        const address = await signer.getAddress()
-        console.log(address)
-        setUserAddress(address)
-        const balance = await signer.getBalance()
-        console.log(ethers.utils.formatEther(balance))
-        setUserBalance(ethers.utils.formatEther(balance))
-    } 
-    window.ethereum.on('accountsChanged', accountChangeHandler);
-
-
-
     useEffect(() => {
-      walletConnectHandler() 
-      web3&&setEndpoint(web3)
-    }, [])    
+      walletConnectHandler()
+      endpointHandler()
+    }, [])
+    useEffect(() => {
+      balanceHandler()
+    }, [userAddress])
+    
     
     return (<ConnectionContext.Provider
     value = {{provider,errorMessage,userAddress,userBalance,
-    setErrorMessage,endpoint
+    setErrorMessage,endpoint,endpointHandler
     
     }}
     >{children}</ConnectionContext.Provider>)
