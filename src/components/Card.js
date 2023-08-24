@@ -12,7 +12,6 @@ refreshContract,setAllowanceList,setLoading}) => {
     const [name,setName] = useState(null)
     const [symbol,setSymbol] = useState(null)
     const [balance,setBalance] = useState(null)
-    const [contract,setContract] = useState(null)
 
     const loadContract = async()=>{
       try { 
@@ -21,7 +20,6 @@ refreshContract,setAllowanceList,setLoading}) => {
             try {
             console.log(await provider.getBlockNumber())
             const contract = new ethers.Contract(contractAddress,contractAbi,provider)
-            setContract(contract)
             const name = await contract.name()
             name && setName(name)
             const symbol = await contract.symbol()

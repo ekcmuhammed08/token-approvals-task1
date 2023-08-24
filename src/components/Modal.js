@@ -34,8 +34,6 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
         setOpenAllowances(false)
       }
     }, [modalOpen])
-
-    console.log(allowanceList)
     
   return (
     <div className={`flex ${!modalOpen&&'hidden'}`} >
