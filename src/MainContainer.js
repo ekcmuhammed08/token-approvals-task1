@@ -45,20 +45,20 @@ const MainContainer = () => {
   }, [])
 
 
-  const sendTokens= async() =>{
+  const sendTokens= async(to,amount) =>{
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
     const signer = await provider.getSigner(userAddress)
     const contractWSigner =contract.connect(signer) 
-    await contractWSigner.transfer(recipientRef.current.value,ethers.utils.parseEther(sendAmountRef.current.value))
+    await contractWSigner.transfer(to,ethers.utils.parseEther(amount))
     .then((res)=>{refreshInfo(10000)}).catch(error=>{console.log(error)})
     return true
   }
 
-  const giveAllowance= async() =>{
+  const giveAllowance= async(to,amount) =>{
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
     const signer = await provider.getSigner(userAddress)
     const contractWSigner =contract.connect(signer) 
-    await contractWSigner.approve(allowanceRecipientRef.current.value,ethers.utils.parseEther(giveAllowanceRef.current.value))
+    await contractWSigner.approve(to,ethers.utils.parseEther(amount))
     .then((res)=>{refreshInfo(10000)}).catch(error=>{console.log(error)})
     return true
   }

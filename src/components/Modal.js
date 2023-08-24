@@ -7,23 +7,21 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
 
     const [openAllowances,setOpenAllowances] = useState(false) 
     const handleSendTokens = ()=>{
-        sendTokens()
+        sendTokens(recipientRef.current.value,sendAmountRef.current.value)
         .then(()=>{
             recipientRef.current.value = ''
             sendAmountRef.current.value = '' 
         })
     }
     const handleGiveAllowance = ()=>{
-        giveAllowance()
+        giveAllowance(allowanceRecipientRef.current.value,giveAllowanceRef.current.value)
         .then(()=>{
             allowanceRecipientRef.current.value = ''
             giveAllowanceRef.current.value = ''
         })  
     }
     const handleRemoveAllowance = (address)=>{
-        console.log(address)
         giveAllowance(address,'0')
-
     }
     const handleOpenAllowances = ()=>{
         setOpenAllowances(!openAllowances)
@@ -59,7 +57,8 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
                 {openAllowances?<button className='bg-[#f0f8ff] border p-1 rounded' onClick={handleOpenAllowances}>Show Allowances Given ^</button>
                 :<button className='bg-[#d9eafa] border p-1 rounded' onClick={handleOpenAllowances}>Show Allowances Given v</button>}
                 {openAllowances&&<div className="">
-                    {allowanceList && allowanceList.length>0 ?<div className="">
+                    {allowanceList.length===0 && <p>No allowances found</p>}
+                    {allowanceList ?<div className="">
                         {allowanceList.map((e,i)=>{ 
                         console.log(e)
                         return<div className="flex justify-between border rounded my-2 p-4 p items-center">
@@ -67,7 +66,7 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
                             <div className='flex justify-between items-center'>
                                 <FaCoins size={'20px'} className='mt-1'/>
                                 <p className='text-lg font-medium pl-2'> {e.value} </p>
-                                <div className="" onClick={()=>{handleRemoveAllowance(e.address)}}><MdCancel className='ml-3'/></div>
+                                <div className="cursor-pointer" onClick={()=>{handleRemoveAllowance(e.address)}}><MdCancel className='ml-3'/></div>
                             </div>
                         </div>
                         })} 
@@ -78,7 +77,7 @@ currentSymbol,sendTokens,giveAllowance,setModalOpen,allowanceList}) => {
                 </div>}
             </div>
         </div>
-        <div className="bg-[#00000080] w-screen h-screen absolute top-[0%] left-[0%]" onClick={()=>{setModalOpen(false)}}></div>
+        <div className="bg-[#00000080] w-screen h-screen absolute top-[0%] left-[0%]"  onClick={()=>{setModalOpen(false)}}></div>
     </div>
   )
 }
