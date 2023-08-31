@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Card from './Card'
-import {MdAccountBalanceWallet} from 'react-icons/md'
+import Error  from './Error'
+import {MdAccountBalanceWallet, MdExitToApp} from 'react-icons/md'
 import {FaEthereum} from 'react-icons/fa'
+import { ConnectionContext } from '../contexts/Connection'
+
 
 const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork,userBalance,setCurrentContract,
     setModalOpen,modalOpen,setCurrentSymbol,refreshContract, setAllowanceList,
   parseAddress,parseBalance,allowancesGiven, endpoint, refreshInfo, setLoading}) => { 
 
+    const { disconnectHandler } = useContext(ConnectionContext)
     const handleSubmit = (e)=>{
         e.preventDefault()
         if(localStorage.getItem(`${currentNetwork} Contracts`)===null){
@@ -22,24 +26,32 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork
     }
   return (
     <div className=" mb-8">
+        {console.log(window.ethereum.isConnected())}
         <div className="flex bg-[#afeeee] w-full h-20 items-center justify-end px-16">
-            <div className="flex"> 
-                <MdAccountBalanceWallet size={'30px'} className='mt-1 mr-2'/>
-                {userAddress&&<p className='text-3xl font-medium pr-8'>{parseAddress(userAddress)}</p>}
-                <FaEthereum size={'28px'} className='mt-1 mr-2'/>
-                {userBalance&&<p className='text-3xl font-medium pr-8'>{parseBalance(JSON.stringify(userBalance))}</p>}
-            </div>
-            <div className="">
-                <select id="select" ref={selectRef} onClick={handleSelectNetwork}>
-                    <option value="Mumbai" id='Mumbai'>Mumbai</option>
-                    <option value="Polygon" id='Polygon'>Polygon</option>
-                    <option value="Ethereum" id='Ethereum'>Ethereum</option>
-                    <option value="Celo" id='Celo'>Celo</option>
-                    <option value="Celo Alfajores" id='Celo Alfajores'>Celo Alfajores</option>
-                </select>
-            </div>
-        </div>
         {userAddress&&
+        <div className="flex"> 
+            <MdAccountBalanceWallet size={'30px'} className='mt-1 mr-2'/>
+            {userAddress&&<p className='text-3xl font-medium pr-8'>{parseAddress(userAddress)}</p>}
+            <FaEthereum size={'28px'} className='mt-1 mr-2'/>
+            {userBalance&&<p className='text-3xl font-medium pr-8'>{parseBalance(JSON.stringify(userBalance))}</p>}
+        </div>}
+        <div className="">
+            <select id="select" ref={selectRef} onClick={handleSelectNetwork}>
+                <option value="Mumbai" id='Mumbai'>Mumbai</option>
+                <option value="Polygon" id='Polygon'>Polygon</option>
+                <option value="Ethereum" id='Ethereum'>Ethereum</option>
+                <option value="Celo" id='Celo'>Celo</option>
+                <option value="Celo Alfajores" id='Celo Alfajores'>Celo Alfajores</option>
+            </select>
+        </div>
+        {userAddress&& 
+        <div className="ml-4 mt-1">
+          <button onClick={disconnectHandler}>
+            <MdExitToApp size={'25px'}/>
+          </button>
+        </div>}
+        </div>
+        {userAddress?
         <div className='flex flex-col items-center'>
           {currentNetwork&& <div className='add-tokens mt-12'>
               <form onSubmit={(e)=>{handleSubmit(e)}}>
@@ -65,7 +77,10 @@ const Head = ({inputRef,selectRef,handleSelectNetwork,userAddress,currentNetwork
               setLoading={setLoading}/>
             })}
           </div>
-        </div>}
+        </div>
+        :
+        <Error errorCode={2}/>
+        }
       </div>
   )
 }

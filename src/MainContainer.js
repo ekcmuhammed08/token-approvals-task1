@@ -6,6 +6,7 @@ import { ethers } from 'ethers'
 import Modal from './components/Modal'
 import Head from './components/Head'
 import Loading from './components/Loading'
+
 require('dotenv').config() 
 
 const MainContainer = () => {
@@ -24,7 +25,7 @@ const MainContainer = () => {
   const [allowancesGiven,setAllowancesGiven] = useState(false)
   const [loading,setLoading] = useState(true)
 
-  const {userBalance,userAddress,provider,endpoint,endpointHandler} = useContext(ConnectionContext)
+  const {userBalance,userAddress,provider,endpoint,endpointHandler,errorMessage} = useContext(ConnectionContext)
   const {switchNetwork, currentNetwork} = useContext(NetworkContext)
 
   const handleSelectNetwork =()=>{ 
@@ -35,6 +36,10 @@ const MainContainer = () => {
     document.getElementById('select').value =  currentNetwork
     refreshInfo(1000)
   }, [currentNetwork])
+  
+  useEffect(() => {
+    refreshInfo(1000)
+  }, [userAddress])
 
   useEffect(() => {
     if(localStorage.getItem(`currentNetwork`)===null){

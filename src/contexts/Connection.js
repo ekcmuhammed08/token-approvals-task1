@@ -8,16 +8,18 @@ export const ConnectionProvider = ({ children })=>{
     const [userAddress, setUserAddress] = useState(null)
     const [userBalance, setUserBalance] = useState(null)
     const [endpoint, setEndpoint] = useState(null)
-    const provider = new ethers.providers.Web3Provider(window.ethereum,'any')
+    const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum,'any')
 
     const walletConnectHandler= ()=>{
-      console.log('changed')
         try {
           if(window.ethereum){
             provider.send("eth_requestAccounts",[]).then(async(res)=>{  
               console.log(res[0])
               setUserAddress(res[0])
-              setErrorMessage('')
+              localStorage.setItem(`userAddress`,JSON.stringify(res[0]))
+              setErrorMessage(null)
+            }).catch((error)=>{
+              console.log(`error occured with code ${error.code} : `,error)
             })
         }
         else{
@@ -28,11 +30,33 @@ export const ConnectionProvider = ({ children })=>{
           console.log(error)
         }
     }
-    window.ethereum.on('accountsChanged', ()=>{walletConnectHandler()})
-    window.ethereum.on('networkChanged', ()=>{balanceHandler()})
+    const disconnectHandler = async()=>{
+        try {
+          await window.ethereum.request({
+            method: "eth_requestAccounts",
+            params: [{eth_accounts: {}}]
+        }).then((res)=>{
+          localStorage.setItem(`userAddress`,null)
+          setUserAddress(null)
+        }).catch((error) =>{
+          console.log(`error occured with code ${error.code} : `,error)
+        })
+
+        } catch (error) {
+          console.log(`error occured with code ${error.code} : `,error)
+        }
+    }
+    window.ethereum &&window.ethereum.on('accountsChanged', ()=>{changedHandler()})
+    window.ethereum &&window.ethereum.on('networkChanged', ()=>{balanceHandler()})
+
     const balanceHandler = async()=> {
         const bal = userAddress && await provider.getBalance(userAddress)     
         bal&&setUserBalance(ethers.utils.formatEther(bal))
+    }
+    const changedHandler = async()=> {
+      localStorage.setItem(`userAddress`,null)
+      setUserAddress(null)
+      walletConnectHandler()
     }
 
     const endpointHandler = ()=>{
@@ -56,9 +80,15 @@ export const ConnectionProvider = ({ children })=>{
     }
     
     useEffect(() => {
-      walletConnectHandler()
+      if(localStorage.getItem(`userAddress`)==null){
+        walletConnectHandler()
+      }else{
+        setUserAddress(JSON.parse(localStorage.getItem(`userAddress`)))
+      }
       endpointHandler()
     }, [])
+
+
     useEffect(() => {
       balanceHandler()
     }, [userAddress])
@@ -66,7 +96,7 @@ export const ConnectionProvider = ({ children })=>{
     
     return (<ConnectionContext.Provider
     value = {{provider,errorMessage,userAddress,userBalance,
-    setErrorMessage,endpoint,endpointHandler
+    setErrorMessage,endpoint,endpointHandler,walletConnectHandler,disconnectHandler
     
     }}
     >{children}</ConnectionContext.Provider>)

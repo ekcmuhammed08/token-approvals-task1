@@ -16,7 +16,7 @@ refreshContract,setAllowanceList,setLoading}) => {
     const loadContract = async()=>{
       try { 
         if(userAddress){
-          setErrorMessage('') 
+          setErrorMessage(null) 
             try {
             console.log(await provider.getBlockNumber())
             const contract = new ethers.Contract(contractAddress,contractAbi,provider)
@@ -33,7 +33,7 @@ refreshContract,setAllowanceList,setLoading}) => {
             }
         }
         else{
-          setErrorMessage("please connect with your wallet first")
+          setErrorMessage("Please connect your wallet")
         }
         
       } catch (error) {
