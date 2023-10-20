@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect,} from "react";
+import { createContext, useState, useEffect, useContext} from "react";
 import { ethers } from "ethers";
+import { NetworkContext } from './Network';
 
 export const ConnectionContext = createContext()    
 
@@ -14,7 +15,6 @@ export const ConnectionProvider = ({ children })=>{
         try {
           if(window.ethereum){
             provider.send("eth_requestAccounts",[]).then(async(res)=>{  
-              console.log(res[0])
               setUserAddress(res[0])
               localStorage.setItem(`userAddress`,JSON.stringify(res[0]))
               setErrorMessage(null)
@@ -73,14 +73,14 @@ export const ConnectionProvider = ({ children })=>{
       }else if(current && current === 'Celo'){
         console.log('Celo')
         setEndpoint(`https://celo-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
-      }else if(current && current === 'Celo Alfajores'){
+      }else if(current && current === 'Alfajores'){
         console.log('Alfajores')
         setEndpoint(`https://celo-alfajores.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`)
       }
     }
     
     useEffect(() => {
-      if(localStorage.getItem(`userAddress`)==null){
+      if(localStorage.getItem(`userAddress`)==null && localStorage.getItem(`currentNetwork`) !=null){
         walletConnectHandler()
       }else{
         setUserAddress(JSON.parse(localStorage.getItem(`userAddress`)))

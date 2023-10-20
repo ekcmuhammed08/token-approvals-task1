@@ -24,16 +24,17 @@ const MainContainer = () => {
   const [allowanceList,setAllowanceList] = useState(null)
   const [allowancesGiven,setAllowancesGiven] = useState(false)
   const [loading,setLoading] = useState(true)
+  const [currentBalance,setCurrentBalance] = useState()
 
-  const {userBalance,userAddress,provider,endpoint,endpointHandler,errorMessage} = useContext(ConnectionContext)
+  const {userAddress,provider,endpointHandler} = useContext(ConnectionContext)
   const {switchNetwork, currentNetwork} = useContext(NetworkContext)
 
-  const handleSelectNetwork =()=>{ 
-    switchNetwork(selectRef.current.value)
-    localStorage.setItem(`currentNetwork`,JSON.stringify(selectRef.current.value))
+  const handleSelectNetwork =(network)=>{ 
+    switchNetwork(network)
+    localStorage.setItem(`currentNetwork`,JSON.stringify(network))
+    inputRef.current.value = ''
   }
   useEffect(() => {
-    document.getElementById('select').value =  currentNetwork
     refreshInfo(1000)
   }, [currentNetwork])
   
@@ -60,10 +61,16 @@ const MainContainer = () => {
   }
 
   const giveAllowance= async(to,amount) =>{
+    let newAmount;
+    if(amount==='max'){
+      newAmount = ethers.constants.MaxUint256
+    }else{
+      newAmount = amount
+    }
     const contract = new ethers.Contract(currentContract,ERC20abi,provider) 
     const signer = await provider.getSigner(userAddress)
     const contractWSigner =contract.connect(signer) 
-    await contractWSigner.approve(to,ethers.utils.parseEther(amount))
+    await contractWSigner.approve(to,newAmount)
     .then((res)=>{refreshInfo(10000)}).catch(error=>{console.log(error)})
     return true
   }
@@ -80,7 +87,6 @@ const MainContainer = () => {
     setTimeout(()=>{
       setLoading(false)
       setRefreshContract(!refreshContract)
-      console.log('refreshed')
       setModalOpen(false)
     },duration)
   }
@@ -95,20 +101,19 @@ const MainContainer = () => {
   
   useEffect(() => {
     endpointHandler()
-    
   }, [currentNetwork])
   return (
     <div className="">
       <Head 
       setCurrentContract={setCurrentContract} setModalOpen={setModalOpen} modalOpen={modalOpen} 
       setCurrentSymbol={setCurrentSymbol} refreshContract={refreshContract} inputRef={inputRef}   
-      handleSelectNetwork={handleSelectNetwork} currentNetwork={currentNetwork} userBalance={userBalance} 
-      userAddress={userAddress} setAllowanceList={setAllowanceList} parseAddress={parseAddress} 
-      parseBalance={parseBalance} allowancesGiven={allowancesGiven} endpoint={endpoint} 
-      refreshInfo={refreshInfo} setLoading={setLoading} selectRef={selectRef}
+      handleSelectNetwork={handleSelectNetwork} setAllowanceList={setAllowanceList} 
+      parseAddress={parseAddress} parseBalance={parseBalance} allowancesGiven={allowancesGiven}  
+      refreshInfo={refreshInfo} setLoading={setLoading} selectRef={selectRef} setCurrentBalance={setCurrentBalance}
       />
       <Modal modalOpen={modalOpen}
-      setModalOpen={setModalOpen} 
+      setModalOpen={setModalOpen}
+      currentContract={currentContract} 
       currentSymbol={currentSymbol} 
       sendTokens={sendTokens} 
       recipientRef={recipientRef}
@@ -118,6 +123,7 @@ const MainContainer = () => {
       giveAllowance={giveAllowance}
       allowanceList={allowanceList}
       setAllowancesGiven={setAllowancesGiven}
+      currentBalance={currentBalance}
       />
       <Loading loading={loading}/>
     </div>

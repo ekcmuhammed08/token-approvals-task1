@@ -3,7 +3,23 @@ import { createContext, useState} from "react";
 export const NetworkContext = createContext()  
 
 export const NetworkProvider = ({ children })=>{
-    const [currentNetwork,setCurrentNetwork] = useState(null)    
+    
+    const [currentNetwork,setCurrentNetwork] = useState(null)
+    window.ethereum &&window.ethereum.on('networkChanged', ()=>{networkChangeHandler()})
+    const networkChangeHandler = async()=>{
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      if(chainId==='0x13881'){
+        switchNetwork('Mumbai')
+      }else if(chainId==='0x89'){
+        switchNetwork('Polygon')
+      }else if(chainId==='0x1'){
+        switchNetwork('Ethereum')
+      }else if(chainId==='0xa4ec'){
+        switchNetwork('Celo')
+      }else if(chainId==='0xaef3'){
+        switchNetwork('Alfajores')
+      }
+    }    
     const switchNetwork = async(key) =>{
         switch (key) {
           case "Mumbai":
@@ -118,13 +134,13 @@ export const NetworkProvider = ({ children })=>{
               // handle other "switch" errors
             }
             break;
-          case "Celo Alfajores":
+          case "Alfajores":
             try {
               await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: '0xaef3' }],
-              }).then(()=>{setCurrentNetwork('Celo Alfajores')})
-                .then(()=>{localStorage.setItem(`currentNetwork`,JSON.stringify('Celo Alfajores'))})
+              }).then(()=>{setCurrentNetwork('Alfajores')})
+                .then(()=>{localStorage.setItem(`currentNetwork`,JSON.stringify('Alfajores'))})
             } catch (switchError) {
               // This error code indicates that the chain has not been added to MetaMask.
               if (switchError.code === 4902) {
