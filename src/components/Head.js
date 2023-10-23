@@ -150,7 +150,7 @@ const Head = ({inputRef,selectRef,handleSelectNetwork, setCurrentContract,
               }):
               <div className="flex flex-col items-center gap-4 m-12">
                 <GoStack size={64}/>
-                No tokens imported yet
+                No tokens imported yet 
               </div>
               }
             </ul>
