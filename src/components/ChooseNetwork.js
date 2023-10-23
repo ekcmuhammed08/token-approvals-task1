@@ -4,6 +4,12 @@ import { NetworkContext } from '../contexts/Network';
 
 const NetworkCard = ({brandColor,networkName,subnetName}) => {
   const {switchNetwork} = useContext(NetworkContext)
+
+  const chooseNetwork = async(network) =>{
+    await switchNetwork(network).then(()=>{
+      window.location.reload()
+    })
+  }
   return (
     <div className={`flex flex-col items-center w-40 border rounded py-1 px-2 transition-shadow delay-100 shadow-[0_0px_10px_1px_${brandColor}]`}> 
         <div className="flex w-36"> 
@@ -18,7 +24,7 @@ const NetworkCard = ({brandColor,networkName,subnetName}) => {
         <div className="flex w-36 justify-around">
           <div className="font-semibold ">
             <button className='hover:text-gray-400'
-            onClick={()=>{switchNetwork(networkName)}}
+            onClick={()=>{chooseNetwork(networkName)}}
             >
               Mainnet
             </button>
@@ -26,7 +32,7 @@ const NetworkCard = ({brandColor,networkName,subnetName}) => {
           {!(networkName === 'Ethereum') &&
           <div className="font-semibold hover:text-gray-400">
             <button
-            onClick={()=>{switchNetwork(subnetName)}}
+            onClick={()=>{chooseNetwork(subnetName)}}
             >
               {subnetName}
             </button>
